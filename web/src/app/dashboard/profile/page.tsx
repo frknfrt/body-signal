@@ -1,105 +1,99 @@
 "use client";
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
     const [isEditing, setIsEditing] = useState(false);
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-12">
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="max-w-4xl mx-auto"
-            >
-                {/* Üst Kısım: Profil Başlığı */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+        <div className="min-h-screen bg-[#060606] text-white p-6 md:p-12 font-sans selection:bg-green-500/30">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-5xl mx-auto">
+
+                {/* ÜST BAŞLIK - Agresif Stil */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 border-b border-white/5 pb-10">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">Profil Ayarları</h1>
-                        <p className="text-gray-500 mt-1">Biyometrik verilerini buradan güncelleyebilirsin.</p>
+                        <span className="text-green-500 text-[10px] font-black uppercase tracking-[0.5em] mb-2 block">Biyometrik Kimlik</span>
+                        <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
+                            PROFİL <span className="text-white not-italic font-black">AYARLARI</span>
+                        </h1>
                     </div>
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsEditing(!isEditing)}
-                        className={`px-6 py-2 rounded-xl font-medium transition-all ${isEditing ? 'bg-green-600 text-white' : 'bg-[#111111] border border-gray-800 text-gray-400'}`}
+                        className={`px-8 py-4 rounded-2xl font-black uppercase italic text-xs tracking-widest transition-all ${isEditing ? 'bg-green-500 text-black shadow-[0_0_30px_#22c55e]' : 'bg-[#111] border border-zinc-800 text-zinc-500 hover:border-zinc-600'}`}
                     >
-                        {isEditing ? 'Değişiklikleri Kaydet' : 'Profili Düzenle'}
+                        {isEditing ? 'DEĞİŞİKLİKLERİ MÜHÜRLE' : 'PROFİLİ DÜZENLE'}
                     </motion.button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    {/* Sol Kolon: Avatar ve Temel Bilgi */}
-                    <div className="md:col-span-1 space-y-6">
-                        <div className="bg-[#111111] border border-gray-800 rounded-3xl p-8 text-center relative overflow-hidden">
-                            <div className="w-24 h-24 bg-gradient-to-tr from-green-500 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold shadow-lg shadow-green-500/20">
-                                Y
+                    {/* SOL PANEL: Sinyal Kartı */}
+                    <div className="lg:col-span-1">
+                        <div className="bg-[#0f0f0f] border-2 border-zinc-900 rounded-[3rem] p-10 text-center relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-green-500/20 to-transparent" />
+
+                            <div className="w-32 h-32 bg-zinc-900 border-4 border-zinc-800 rounded-full mx-auto mb-6 flex items-center justify-center text-5xl font-black italic text-green-500 shadow-[0_0_50px_rgba(0,0,0,1)] relative">
+                                <span className="relative z-10">Y</span>
+                                <div className="absolute inset-0 rounded-full border-2 border-green-500/10 animate-ping" />
                             </div>
-                            <h2 className="text-xl font-bold">Yavuz</h2>
-                            <p className="text-gray-500 text-sm italic">Premium Üye</p>
 
-                            <div className="mt-6 pt-6 border-t border-gray-800/50 flex justify-around">
+                            <h2 className="text-3xl font-black italic uppercase tracking-tighter italic">Yavuz</h2>
+                            <p className="text-green-900 font-black text-[10px] uppercase tracking-[0.3em] mt-2 italic bg-green-500/5 py-1 px-4 rounded-full inline-block border border-green-500/10">Sinyal Aktif</p>
+
+                            <div className="mt-10 pt-10 border-t border-white/5 grid grid-cols-2 gap-4">
                                 <div className="text-center">
-                                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Sinyal</p>
-                                    <p className="font-bold text-green-500">142</p>
+                                    <p className="text-[9px] text-zinc-600 uppercase font-black tracking-[0.2em] mb-1">Toplam Sinyal</p>
+                                    <p className="font-black text-2xl italic text-white leading-none">142</p>
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Gün</p>
-                                    <p className="font-bold text-blue-500">28</p>
+                                    <p className="text-[9px] text-zinc-600 uppercase font-black tracking-[0.2em] mb-1">Sistem Günü</p>
+                                    <p className="font-black text-2xl italic text-white leading-none">28</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Sağ Kolon: Form Alanları */}
-                    <div className="md:col-span-2 space-y-6">
-                        <div className="bg-[#111111] border border-gray-800 rounded-3xl p-8">
-                            <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500 mb-6">Vücut Metrikleri</h3>
+                    {/* SAĞ PANEL: Metrik Formu */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="bg-[#0f0f0f] border border-white/5 rounded-[3rem] p-8 md:p-12 shadow-3xl">
+                            <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-600 mb-10 italic">Biyometrik Parametreler</h3>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                {/* BOY INPUTU */}
-                                <div>
-                                    <label className="block text-xs text-gray-500 mb-2 ml-1">BOY (100-250 CM)</label>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+                                <div className="space-y-3">
+                                    <label className="block text-[10px] font-black text-zinc-500 tracking-widest uppercase ml-1 italic">Boy (cm)</label>
                                     <input
                                         type="number"
-                                        min="100"
-                                        max="250"
                                         disabled={!isEditing}
                                         placeholder="180"
-                                        className="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 focus:border-green-500 outline-none transition-all disabled:opacity-50 invalid:border-red-500/50 invalid:text-red-400"
+                                        className="w-full bg-black border border-zinc-800 rounded-2xl px-6 py-4 focus:border-green-500 outline-none transition-all text-xl font-black italic disabled:opacity-30"
                                     />
                                 </div>
-                                {/* HEDEF KİLO INPUTU */}
-                                <div>
-                                    <label className="block text-xs text-gray-500 mb-2 ml-1">HEDEF KİLO (30-300 KG)</label>
+                                <div className="space-y-3">
+                                    <label className="block text-[10px] font-black text-zinc-500 tracking-widest uppercase ml-1 italic">Hedef Kilo (kg)</label>
                                     <input
                                         type="number"
-                                        min="30"
-                                        max="300"
                                         disabled={!isEditing}
                                         placeholder="75"
-                                        className="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 focus:border-green-500 outline-none transition-all disabled:opacity-50 invalid:border-red-500/50 invalid:text-red-400"
+                                        className="w-full bg-black border border-zinc-800 rounded-2xl px-6 py-4 focus:border-green-500 outline-none transition-all text-xl font-black italic disabled:opacity-30"
                                     />
                                 </div>
-                                {/* YAŞ INPUTU */}
-                                <div>
-                                    <label className="block text-xs text-gray-500 mb-2 ml-1">YAŞ (13-100)</label>
+                                <div className="space-y-3">
+                                    <label className="block text-[10px] font-black text-zinc-500 tracking-widest uppercase ml-1 italic">Yaş</label>
                                     <input
                                         type="number"
-                                        min="13"
-                                        max="100"
                                         disabled={!isEditing}
                                         placeholder="24"
-                                        className="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 focus:border-green-500 outline-none transition-all disabled:opacity-50 invalid:border-red-500/50 invalid:text-red-400"
+                                        className="w-full bg-black border border-zinc-800 rounded-2xl px-6 py-4 focus:border-green-500 outline-none transition-all text-xl font-black italic disabled:opacity-30"
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-xs text-gray-500 mb-2 ml-1">AKTİVİTE SEVİYESİ</label>
+                                <div className="space-y-3">
+                                    <label className="block text-[10px] font-black text-zinc-500 tracking-widest uppercase ml-1 italic">Aktivite Seviyesi</label>
                                     <select
                                         disabled={!isEditing}
-                                        className="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 focus:border-green-500 outline-none transition-all appearance-none disabled:opacity-50"
+                                        className="w-full bg-black border border-zinc-800 rounded-2xl px-6 py-4 focus:border-green-500 outline-none transition-all text-sm font-black italic appearance-none disabled:opacity-30 uppercase"
                                     >
                                         <option>Haftada 3-4 Gün</option>
                                         <option>Haftada 5-6 Gün</option>
@@ -108,17 +102,15 @@ export default function ProfilePage() {
                                 </div>
                             </div>
 
-                            <div className="mt-8">
-                                <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500 mb-6">Hesap Ayarları</h3>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-4 bg-[#1a1a1a] rounded-xl border border-gray-800">
-                                        <div>
-                                            <p className="text-sm font-medium">E-posta Bildirimleri</p>
-                                            <p className="text-xs text-gray-500">Haftalık analiz raporlarını al.</p>
-                                        </div>
-                                        <div className="w-10 h-5 bg-green-500 rounded-full relative cursor-pointer">
-                                            <div className="absolute right-1 top-1 w-3 h-3 bg-white rounded-full shadow-sm" />
-                                        </div>
+                            <div className="mt-12 pt-10 border-t border-white/5">
+                                <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-600 mb-8 italic">Sistem Tercihleri</h3>
+                                <div className="flex items-center justify-between p-6 bg-black rounded-[2rem] border border-zinc-900">
+                                    <div>
+                                        <p className="text-sm font-black uppercase italic tracking-tighter">E-posta Bildirimleri</p>
+                                        <p className="text-[10px] text-zinc-600 font-bold uppercase mt-1">Haftalık Analiz Raporları</p>
+                                    </div>
+                                    <div className="w-12 h-6 bg-green-500 rounded-full relative cursor-pointer shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+                                        <div className="absolute right-1 top-1 w-4 h-4 bg-black rounded-full shadow-sm" />
                                     </div>
                                 </div>
                             </div>

@@ -1,166 +1,157 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
-// Örnek Veri Seti (Gerçekçi bir dalgalanma için)
 const data = [
-    { day: 'Pzt', score: 85 },
-    { day: 'Sal', score: 98 },
-    { day: 'Çar', score: 92 },
-    { day: 'Per', score: 115 },
-    { day: 'Cum', score: 108 },
-    { day: 'Cmt', score: 125 },
-    { day: 'Paz', score: 118 },
+    { day: 'Pzt', volume: 2400, strength: 110 },
+    { day: 'Sal', volume: 2800, strength: 112 },
+    { day: 'Çar', volume: 2600, strength: 112 },
+    { day: 'Per', volume: 3200, strength: 115 },
+    { day: 'Cum', volume: 3100, strength: 114 },
+    { day: 'Cmt', volume: 3500, strength: 118 },
+    { day: 'Paz', volume: 3400, strength: 118 },
 ];
 
 export default function DashboardPage() {
+    const [isLoading, setIsLoading] = useState(true);
+    // Bu 'status' verisi PostgreSQL'den gelecek: "POSITIVE", "PLATEAU", "STABLE"
+    const [status, setStatus] = useState("PLATEAU");
+
+    useEffect(() => {
+        setTimeout(() => setIsLoading(false), 1500);
+    }, []);
+
+    // Dinamik Tema Ayarları
+    const theme = {
+        POSITIVE: { color: "#22c55e", text: "text-green-500", bg: "bg-green-500/5", border: "border-green-500/20", shadow: "shadow-green-500/20" },
+        PLATEAU: { color: "#ef4444", text: "text-red-500", bg: "bg-red-500/5", border: "border-red-500/20", shadow: "shadow-red-500/20" },
+        STABLE: { color: "#3b82f6", text: "text-blue-500", bg: "bg-blue-500/5", border: "border-blue-500/20", shadow: "shadow-blue-500/20" }
+    }[status] || { color: "#22c55e", text: "text-green-500" };
+
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white p-4 md:p-8">
-            {/* Header Bölümü */}
-            <header className="max-w-7xl mx-auto flex justify-between items-end mb-12">
+        <div className="min-h-screen bg-[#060606] text-white p-4 md:p-8 font-sans selection:bg-zinc-800">
+            <header className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6">
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                    <span className="text-green-500 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">Performans Paneli</span>
-                    <h1 className="text-4xl font-black italic uppercase tracking-tighter italic">Hoş geldin, <span className="text-green-500 not-italic">Yavuz</span></h1>
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className={`h-1.5 w-1.5 rounded-full animate-pulse ${status === "PLATEAU" ? 'bg-red-500' : 'bg-green-500'}`} />
+                        <span className={`${theme.text} text-[10px] font-black uppercase tracking-[0.4em] block`}>
+                            {status === "PLATEAU" ? "SİSTEM ALARMI: ANALİZ GEREKLİ" : "SİSTEM DURUMU: OPTİMAL"}
+                        </span>
+                    </div>
+                    <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
+                        HOŞ GELDİN, <span className={`${theme.text} not-italic`}>YAVUZ</span>
+                    </h1>
                 </motion.div>
 
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
-                    <Link href="/dashboard/input">
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="bg-green-600 px-6 py-3 rounded-2xl font-black uppercase italic text-xs tracking-widest shadow-[0_10px_30px_rgba(34,197,94,0.2)] hover:bg-green-500 transition-all"
-                        >
-                            Yeni Sinyal Gönder +
-                        </motion.button>
-                    </Link>
-                </motion.div>
+                <Link href="/dashboard/input">
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        className="bg-white text-black px-8 py-4 rounded-2xl font-black uppercase italic text-sm tracking-tighter shadow-2xl"
+                    >
+                        YENİ SİNYAL GÖNDER +
+                    </motion.button>
+                </Link>
             </header>
 
-            <main className="max-w-7xl mx-auto space-y-8">
+            <main className="max-w-7xl mx-auto space-y-6">
+                {/* DİNAMİK ANALİZ KARTI */}
+                <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`${theme.bg} ${theme.border} border-2 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden`}
+                >
+                    <div className="relative z-10 flex items-center gap-6">
+                        <div className={`p-4 rounded-2xl bg-black border-2 ${theme.border} font-black text-3xl ${theme.text} italic`}>!</div>
+                        <div>
+                            <p className={`text-[10px] font-black uppercase tracking-widest ${theme.text} mb-1`}>AI ANALİZ MOTORU BİLDİRİMİ</p>
+                            <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter leading-none">
+                                {status === "PLATEAU" ? "BENCH PRESS: GELİŞİM DURAKLADI. ACİL DELOAD." : "GELİŞİM TRENDİ POZİTİF: HACMİ ARTIR."}
+                            </h3>
+                        </div>
+                    </div>
+                    <Link href="/dashboard/analysis/latest" className="relative z-10">
+                        <button className={`px-8 py-3 bg-white text-black rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl`}>
+                            DETAYLI TEŞHİSİ GÖR
+                        </button>
+                    </Link>
+                </motion.div>
 
-                {/* Üst Kısım: Grafik ve 4 Ana Sinyal Durumu */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-
-                    {/* Büyük Grafik (3 kolon kaplar) */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="lg:col-span-3 bg-[#111] border border-white/5 rounded-[2.5rem] p-8"
-                    >
-                        <div className="flex justify-between items-center mb-8">
+                    {/* DİNAMİK RENKLİ GRAFİK */}
+                    <div className="lg:col-span-3 bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] p-8 shadow-3xl">
+                        <div className="flex justify-between items-center mb-10">
                             <div>
-                                <h3 className="text-xl font-black italic uppercase tracking-tighter">Strength Score Trend</h3>
-                                <p className="text-zinc-500 text-xs font-medium mt-1">Haftalık güç ve hacim gelişim grafiği</p>
-                            </div>
-                            <div className="flex gap-3">
-                                <span className="text-[9px] font-black uppercase tracking-widest text-green-500 bg-green-500/5 px-3 py-1.5 rounded-full border border-green-500/10">Pozitif Trend</span>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-blue-500 bg-blue-500/5 px-3 py-1.5 rounded-full border border-blue-500/10">Stabil</span>
+                                <h3 className="text-2xl font-black italic uppercase tracking-tighter italic underline underline-offset-8 decoration-white/5">STRENGTH_VELOCITY</h3>
                             </div>
                         </div>
-
-                        <div className="h-[350px] w-full">
+                        <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
                                 <AreaChart data={data}>
                                     <defs>
-                                        <linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.2}/>
-                                            <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                                        <linearGradient id="dynamicColor" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor={theme.color} stopOpacity={0.3}/>
+                                            <stop offset="95%" stopColor={theme.color} stopOpacity={0}/>
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
-                                    <XAxis dataKey="day" stroke="#3f3f46" fontSize={11} fontWeight="bold" tickLine={false} axisLine={false} dy={10} />
-                                    <YAxis stroke="#3f3f46" fontSize={11} fontWeight="bold" tickLine={false} axisLine={false} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: '#111', border: '1px solid #27272a', borderRadius: '16px', fontSize: '12px', fontWeight: 'bold' }}
-                                        cursor={{ stroke: '#22c55e', strokeWidth: 1 }}
-                                    />
-                                    <Area
-                                        type="monotone"
-                                        dataKey="score"
-                                        stroke="#22c55e"
-                                        strokeWidth={4}
-                                        fillOpacity={1}
-                                        fill="url(#colorScore)"
-                                        animationDuration={2500}
-                                    />
+                                    <XAxis dataKey="day" stroke="#27272a" fontSize={10} fontWeight="900" />
+                                    <YAxis stroke="#27272a" fontSize={10} fontWeight="900" />
+                                    <Tooltip contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '12px', fontWeight: '900' }} />
+                                    <Area type="monotone" dataKey="strength" stroke={theme.color} strokeWidth={4} fill="url(#dynamicColor)" />
                                 </AreaChart>
                             </ResponsiveContainer>
                         </div>
-                    </motion.div>
+                    </div>
 
-                    {/* Sağ Sinyal Kartları (4 Tane Küçük Kart) */}
+                    {/* SAĞ KARTLAR */}
                     <div className="space-y-4">
-                        <SignalSummaryCard title="Toparlanma" status="Plateau" color="text-red-500" bg="bg-red-500/5" border="border-red-500/10" />
-                        <SignalSummaryCard title="Nöral Verim" status="Stabil" color="text-blue-500" bg="bg-blue-500/5" border="border-blue-500/10" />
-                        <SignalSummaryCard title="Metabolizma" status="Pozitif" color="text-green-500" bg="bg-green-500/5" border="border-green-500/10" />
-                        <SignalSummaryCard title="Uyku Kalitesi" status="Değişken" color="text-orange-500" bg="bg-orange-500/5" border="border-orange-500/10" />
+                        <SignalSummaryCard title="PLATO RİSKİ" status={status === "PLATEAU" ? "%88 (YÜKSEK)" : "%12 (DÜŞÜK)"} color={theme.text} />
+                        <SignalSummaryCard title="RECOVERY STATUS" status={status === "PLATEAU" ? "KRİTİK" : "OPTIMAL"} color={theme.text} />
+                        <SignalSummaryCard title="SİNYAL GÜCÜ" status="%94" color="text-white" />
                     </div>
                 </div>
 
-                {/* Alt Kısım: Geçmiş Sinyaller Tablosu */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-[#111] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl"
-                >
+                {/* SİNYAL GÜNLÜĞÜ */}
+                <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] overflow-hidden">
                     <div className="p-8 border-b border-white/5 flex justify-between items-center">
-                        <h3 className="text-xl font-black italic uppercase tracking-tighter">Sinyal Geçmişi</h3>
-                        <button className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em] hover:text-white transition-colors">Tümünü İndir</button>
+                        <h3 className="text-xl font-black italic uppercase tracking-tighter italic">SİNYAL GEÇMİŞİ</h3>
                     </div>
-
-                    <div className="overflow-x-auto">
+                    <div className="p-4 overflow-x-auto">
                         <table className="w-full text-left">
-                            <thead>
-                            <tr className="bg-white/[0.02] text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-black">
-                                <th className="px-10 py-5">Tarih</th>
-                                <th className="px-10 py-5">Skor</th>
-                                <th className="px-10 py-5">Durum</th>
-                                <th className="px-10 py-5">Değişim</th>
-                                <th className="px-10 py-5 text-right">Analiz</th>
+                            <thead className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">
+                            <tr>
+                                <th className="p-4">TARİH</th>
+                                <th className="p-4">SKOR</th>
+                                <th className="p-4">DURUM</th>
+                                <th className="p-4 text-right">AKSİYON</th>
                             </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/[0.03]">
-                            {[
-                                { date: "09 Ocak 2026", score: 118, status: "Pozitif", trend: "+2.4%", color: "text-green-500" },
-                                { date: "08 Ocak 2026", score: 125, status: "Pozitif", trend: "+12.2%", color: "text-green-500" },
-                                { date: "07 Ocak 2026", score: 108, status: "Stabil", trend: "-6.0%", color: "text-blue-400" },
-                                { date: "06 Ocak 2026", score: 115, status: "Değişken", trend: "+25.0%", color: "text-orange-500" },
-                            ].map((row, index) => (
-                                <tr key={index} className="hover:bg-white/[0.02] transition-colors group">
-                                    <td className="px-10 py-6 text-sm font-bold text-zinc-300">{row.date}</td>
-                                    <td className="px-10 py-6 text-sm font-black italic">{row.score}</td>
-                                    <td className={`px-10 py-6 text-[10px] font-black uppercase tracking-widest ${row.color}`}>{row.status}</td>
-                                    <td className="px-10 py-6 text-sm font-medium text-zinc-500">{row.trend}</td>
-                                    <td className="px-10 py-6 text-right">
-                                        <button className="px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-xl text-[10px] font-black uppercase tracking-widest hover:border-zinc-600 transition-all">Detay</button>
-                                    </td>
-                                </tr>
-                            ))}
+                            <tbody className="divide-y divide-white/[0.02]">
+                            <tr className="group hover:bg-white/[0.02] transition-all">
+                                <td className="p-4 font-bold text-sm">11 OCA</td>
+                                <td className="p-4 font-black italic text-xl">124</td>
+                                <td className={`p-4 font-black text-[10px] uppercase tracking-widest ${theme.text}`}>{status}</td>
+                                <td className="p-4 text-right">
+                                    <button className="text-[10px] font-black uppercase tracking-widest bg-zinc-900 px-4 py-2 rounded-xl border border-zinc-800">DETAY</button>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
-                </motion.div>
+                </div>
             </main>
         </div>
     );
 }
 
-// Yardımcı Bileşen: Sağdaki Küçük Durum Kartları
-function SignalSummaryCard({ title, status, color, bg, border }: any) {
+function SignalSummaryCard({ title, status, color }: any) {
     return (
-        <motion.div
-            whileHover={{ x: 5 }}
-            className={`${bg} ${border} border p-5 rounded-[1.8rem] transition-all cursor-default`}
-        >
-            <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em] block mb-1">{title}</span>
-            <div className="flex justify-between items-center">
-                <span className={`text-sm font-black uppercase italic ${color}`}>{status}</span>
-                <div className={`w-1.5 h-1.5 rounded-full ${color.replace('text', 'bg')} animate-pulse`} />
-            </div>
-        </motion.div>
+        <div className="bg-[#0f0f0f] border border-white/5 p-6 rounded-[2rem] transition-all hover:border-zinc-700 group">
+            <span className="text-[9px] font-black text-zinc-600 uppercase tracking-widest block mb-2">{title}</span>
+            <span className={`text-lg font-black uppercase italic tracking-tighter ${color}`}>{status}</span>
+        </div>
     );
 }

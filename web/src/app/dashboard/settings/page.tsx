@@ -5,79 +5,57 @@ import { motion } from 'framer-motion';
 
 export default function SettingsPage() {
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-12">
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="max-w-4xl mx-auto"
-            >
-                {/* Header */}
-                <div className="mb-10">
-                    <h1 className="text-3xl font-bold tracking-tight">Ayarlar</h1>
-                    <p className="text-gray-500 mt-1">Hesap güvenliği ve uygulama tercihlerini yönet.</p>
-                </div>
+        <div className="min-h-screen bg-[#060606] text-white p-6 md:p-12 font-sans selection:bg-red-500/30">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-4xl mx-auto space-y-8">
 
-                <div className="space-y-6">
-                    {/* Güvenlik Bölümü */}
-                    <section className="bg-[#111111] border border-gray-800 rounded-3xl p-8">
-                        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                            Güvenlik ve Şifre
+                <header className="mb-12 border-b border-white/5 pb-10">
+                    <span className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.5em] mb-2 block italic">Sistem Yapılandırması</span>
+                    <h1 className="text-5xl font-black italic uppercase tracking-tighter italic">AYARLAR</h1>
+                </header>
+
+                <div className="space-y-8">
+                    {/* GÜVENLİK */}
+                    <section className="bg-[#0f0f0f] border border-white/5 rounded-[3rem] p-10 shadow-3xl">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-red-500 mb-10 italic flex items-center gap-3">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                            Güvenlik Protokolü
                         </h3>
 
-                        <div className="space-y-4 max-w-md">
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-2 ml-1">MEVCUT ŞİFRE</label>
-                                <input type="password" px-4 py-3 className="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 focus:border-green-500 outline-none transition-all" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-zinc-600 tracking-widest uppercase italic ml-1">Mevcut Şifre</label>
+                                <input type="password" placeholder="••••••••" className="w-full bg-black border border-zinc-900 rounded-2xl px-6 py-4 focus:border-red-500 outline-none transition-all text-xl" />
                             </div>
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-2 ml-1">YENİ ŞİFRE</label>
-                                <input type="password" px-4 py-3 className="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl px-4 py-3 focus:border-green-500 outline-none transition-all" />
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-zinc-600 tracking-widest uppercase italic ml-1">Yeni Şifre</label>
+                                <input type="password" placeholder="••••••••" className="w-full bg-black border border-zinc-900 rounded-2xl px-6 py-4 focus:border-red-500 outline-none transition-all text-xl" />
                             </div>
-                            <button className="bg-white text-black px-6 py-2 rounded-xl text-sm font-bold hover:bg-gray-200 transition-all">
-                                Şifreyi Güncelle
-                            </button>
                         </div>
+                        <button className="mt-8 bg-white text-black px-10 py-4 rounded-2xl text-[11px] font-black uppercase italic tracking-widest hover:bg-zinc-200 transition-all">
+                            Şifreyi Mühürle
+                        </button>
                     </section>
 
-                    {/* Veri Yönetimi */}
-                    <section className="bg-[#111111] border border-gray-800 rounded-3xl p-8">
-                        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                            Veri ve Gizlilik
-                        </h3>
+                    {/* VERİ YÖNETİMİ */}
+                    <section className="bg-[#0f0f0f] border border-white/5 rounded-[3rem] p-10 shadow-3xl">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-10 italic">Veri Terminali</h3>
 
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between p-4 bg-[#1a1a1a] rounded-xl border border-gray-800">
+                            <div className="flex items-center justify-between p-6 bg-black rounded-[2.5rem] border border-zinc-900 group hover:border-zinc-700 transition-all">
                                 <div>
-                                    <p className="text-sm font-medium text-gray-200">Verilerimi Dışa Aktar</p>
-                                    <p className="text-xs text-gray-500">Tüm sinyal geçmişini JSON formatında indir.</p>
+                                    <p className="text-sm font-black uppercase italic tracking-tighter italic">Veri Dışa Aktarımı</p>
+                                    <p className="text-[10px] text-zinc-600 font-bold uppercase mt-1 italic tracking-widest">Tüm Sinyal Geçmişi (JSON)</p>
                                 </div>
-                                <button className="text-blue-500 text-sm font-bold hover:underline">İndir</button>
+                                <button className="text-green-500 text-[10px] font-black uppercase tracking-widest bg-green-500/5 px-6 py-3 rounded-xl border border-green-500/10 hover:bg-green-500 hover:text-black transition-all">İndir</button>
                             </div>
 
-                            <div className="flex items-center justify-between p-4 bg-[#1a0d0d] rounded-xl border border-red-900/20">
+                            <div className="flex items-center justify-between p-6 bg-red-500/5 rounded-[2.5rem] border border-red-500/10 group">
                                 <div>
-                                    <p className="text-sm font-medium text-red-500">Hesabı Sil</p>
-                                    <p className="text-xs text-gray-600">Bu işlem geri alınamaz ve tüm verilerin silinir.</p>
+                                    <p className="text-sm font-black uppercase italic tracking-tighter text-red-500 italic">Sistemden Ayrıl</p>
+                                    <p className="text-[10px] text-red-900/50 font-bold uppercase mt-1 italic">Tüm veriler kalıcı olarak silinir</p>
                                 </div>
-                                <button className="text-red-500 text-sm font-bold bg-red-500/10 px-4 py-2 rounded-lg hover:bg-red-500/20 transition-all">Hesabı Kapat</button>
+                                <button className="text-red-500 text-[10px] font-black uppercase tracking-widest bg-red-500/10 px-6 py-3 rounded-xl border border-red-500/20 hover:bg-red-500 hover:text-white transition-all">Hesabı Kapat</button>
                             </div>
-                        </div>
-                    </section>
-
-                    {/* Uygulama Tercihleri */}
-                    <section className="bg-[#111111] border border-gray-800 rounded-3xl p-8">
-                        <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-gray-500 mb-6 flex items-center gap-2">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-                            Uygulama Ayarları
-                        </h3>
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-300">Ölçü Birimi</p>
-                            <select className="bg-[#1a1a1a] border border-gray-800 rounded-lg px-3 py-2 text-sm outline-none text-green-500 font-bold">
-                                <option>Metrik (kg, cm)</option>
-                                <option>Imperial (lbs, ft)</option>
-                            </select>
                         </div>
                     </section>
                 </div>
