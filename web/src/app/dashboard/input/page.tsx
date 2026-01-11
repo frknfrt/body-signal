@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { EXERCISE_DATABASE } from "@/constants/exercises"
 
-const EXERCISE_DATABASE = ["BENCH PRESS", "SQUAT", "DEADLIFT", "OHP", "BARBELL ROW", "INCLINE BENCH", "PULL UPS", "DIPS", "LEG PRESS", "LAT PULLDOWN"];
 const RPE_VALUES = [6, 7, 8, 8.5, 9, 9.5, 10];
 
 export default function SignalInputPage() {
@@ -42,17 +42,62 @@ export default function SignalInputPage() {
         setStep(2);
     };
 
-    const handleFinalSubmit = (e: React.FormEvent) => {
+   // 🔥 BACKEND BAĞLANTISI
+    const handleFinalSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (!biometricData.sleepTime || !biometricData.wakeTime || !biometricData.weight) {
             setError("BİYOMETRİK VERİLER EKSİK!");
             shakeTrigger();
             return;
         }
+
         setError(null);
         setIsProcessing(true);
-        setTimeout(() => { window.location.href = "/dashboard"; }, 3000);
+
+        const payload = {
+            recordDate: new Date().toISOString().split("T")[0],
+            sleepTime: biometricData.sleepTime,
+            wakeUpTime: biometricData.wakeTime,
+            morningWeight: Number(biometricData.weight),
+             workout: {
+                    exercises: workoutRows.map(row => ({
+                        name: row.exercise,
+                        weight: Number(row.load),
+                        repCount: Number(row.reps),
+                        lastSetRpe: Number(row.rpe)
+                    }))
+                }
+        };
+
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch("http://localhost:8080/api/daily-records", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                     Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                throw new Error("Kayıt başarısız");
+            }
+
+            setTimeout(() => {
+                window.location.href = "/dashboard";
+            }, 2000);
+
+        } catch (err) {
+            console.error(err);
+            setError("SUNUCU HATASI!");
+            shakeTrigger();
+            setIsProcessing(false);
+        }
     };
+
+
 
     return (
         <div className="min-h-screen bg-[#060606] text-white p-4 md:p-12 overflow-x-hidden relative">
