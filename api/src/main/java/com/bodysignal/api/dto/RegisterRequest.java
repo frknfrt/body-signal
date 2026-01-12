@@ -1,2 +1,10 @@
-package com.bodysignal.api.dto;public class RegisterRequest {
+package com.bodysignal.api.dto;
+
+import lombok.Data;
+
+@Data
+public class RegisterRequest {
+    private String email;
+    private String password;
+    private String fullName;
 }

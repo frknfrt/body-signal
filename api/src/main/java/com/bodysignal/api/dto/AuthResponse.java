@@ -1,2 +1,10 @@
-package com.bodysignal.api.dto;public class AuthResponse {
+package com.bodysignal.api.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public class AuthResponse {
+    private String message;
 }

@@ -1,2 +1,9 @@
-package com.bodysignal.api.dto;public class Login {
+package com.bodysignal.api.dto;
+
+import lombok.Data;
+
+@Data
+public class Login {
+    private String email;
+    private String password;
 }

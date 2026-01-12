@@ -9,12 +9,12 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
-public class DailyRecord {
+public class DailyRecordDto {
 
-    private LocalDate recordDate;
+    private String recordDate;
 
-    private LocalTime sleepTime;
-    private LocalTime wakeUpTime;
+    private String sleepTime;
+    private String wakeUpTime;
 
     private Double morningWeight;
 

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Workout {
+public class WorkoutDto {
 
     private List<Exercise> exercises;
 }
