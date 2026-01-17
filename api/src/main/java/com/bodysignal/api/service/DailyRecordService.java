@@ -9,6 +9,7 @@ import com.bodysignal.api.repository.DailyRecordRepository;
 import com.bodysignal.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class DailyRecordService {
     private final UserRepository userRepository;
     private final AIAnalysisService aiAnalysisService;
 
-
+    @Transactional
     public void createDailyRecord(
             DailyRecordDto request,
             String email) {
@@ -55,10 +56,14 @@ public class DailyRecordService {
         record.setWorkout(workout);
         record.setUser(user);
 
+        // 1. Veriyi veritabanına kaydediyoruz (Burası çalışmalı!)
         dailyRecordRepository.save(record);
-        aiAnalysisService.analyzeAndSave(
+
+        // 2. AI Analizi şu anlık devre dışı bırakıyoruz (Hata buradaydı)
+        /* aiAnalysisService.analyzeAndSave(
                 record,
                 email
         );
+        */
     }
 }

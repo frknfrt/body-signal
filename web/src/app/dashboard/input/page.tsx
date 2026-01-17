@@ -42,7 +42,7 @@ export default function SignalInputPage() {
         setStep(2);
     };
 
-   // 🔥 BACKEND BAĞLANTISI
+    // 🔥 BACKEND BAĞLANTISI (GÜNCELLENDİ)
     const handleFinalSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -60,44 +60,44 @@ export default function SignalInputPage() {
             sleepTime: biometricData.sleepTime,
             wakeUpTime: biometricData.wakeTime,
             morningWeight: Number(biometricData.weight),
-             workout: {
-                    exercises: workoutRows.map(row => ({
-                        name: row.exercise,
-                        weight: Number(row.load),
-                        repCount: Number(row.reps),
-                        lastSetRpe: Number(row.rpe)
-                    }))
-                }
+            workout: {
+                exercises: workoutRows.map(row => ({
+                    name: row.exercise,
+                    weight: Number(row.load),
+                    repCount: Number(row.reps),
+                    lastSetRpe: Number(row.rpe)
+                }))
+            }
         };
 
         try {
-            const token = localStorage.getItem("token");
-            const res = await fetch("http://localhost:8080/api/daily-records", {
+            // Port 8081 olarak güncellendi ve headers sadeleştirildi
+            const res = await fetch("http://localhost:8081/api/daily-records", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                     Authorization: `Bearer ${token}`
+                    // Eğer login sisteminiz varsa Authorization başlığını buraya ekleyebilirsiniz
                 },
                 body: JSON.stringify(payload)
             });
 
             if (!res.ok) {
-                throw new Error("Kayıt başarısız");
+                const errorText = await res.text();
+                throw new Error(errorText || "Kayıt başarısız");
             }
 
+            // Animasyonun tamamlanması için 2.5 saniye bekle ve Dashboard'a uç!
             setTimeout(() => {
                 window.location.href = "/dashboard";
-            }, 2000);
+            }, 2500);
 
         } catch (err) {
             console.error(err);
-            setError("SUNUCU HATASI!");
+            setError("SİNYAL İLETİLEMEDİ: SUNUCU BAĞLANTISINI KONTROL ET!");
             shakeTrigger();
             setIsProcessing(false);
         }
     };
-
-
 
     return (
         <div className="min-h-screen bg-[#060606] text-white p-4 md:p-12 overflow-x-hidden relative">
@@ -107,7 +107,7 @@ export default function SignalInputPage() {
                 input[type=time]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
             `}} />
 
-            {/* --- ANALİZ OVERLAY ANİMASYONU (TAM KOPYA) --- */}
+            {/* --- ANALİZ OVERLAY ANİMASYONU --- */}
             <AnimatePresence>
                 {isProcessing && (
                     <motion.div
@@ -133,7 +133,7 @@ export default function SignalInputPage() {
                                 <p className="text-zinc-600 font-black uppercase text-[10px] tracking-[0.6em] animate-pulse italic">Biyometrik Veriler Analiz Ediliyor...</p>
                             </div>
                             <div className="w-64 mx-auto h-1 bg-zinc-900 rounded-full overflow-hidden mt-4">
-                                <motion.div initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 2.8 }}
+                                <motion.div initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 2.3 }}
                                             className="h-full bg-green-500 shadow-[0_0_15px_#22c55e]"
                                 />
                             </div>

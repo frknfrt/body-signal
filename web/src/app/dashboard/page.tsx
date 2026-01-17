@@ -5,23 +5,42 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
-const data = [
-    { day: 'Pzt', volume: 2400, strength: 110 },
-    { day: 'Sal', volume: 2800, strength: 112 },
-    { day: 'Çar', volume: 2600, strength: 112 },
-    { day: 'Per', volume: 3200, strength: 115 },
-    { day: 'Cum', volume: 3100, strength: 114 },
-    { day: 'Cmt', volume: 3500, strength: 118 },
-    { day: 'Paz', volume: 3400, strength: 118 },
-];
-
 export default function DashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
-    // Bu 'status' verisi PostgreSQL'den gelecek: "POSITIVE", "PLATEAU", "STABLE"
-    const [status, setStatus] = useState("PLATEAU");
+    // Veritabanından gelecek gerçek veriler için state'ler
+    const [status, setStatus] = useState("STABLE");
+    const [chartData, setChartData] = useState([]);
+    const [latestScore, setLatestScore] = useState(0);
+    const [latestDate, setLatestDate] = useState("-");
 
     useEffect(() => {
-        setTimeout(() => setIsLoading(false), 1500);
+        // Backend'den verileri çeken fonksiyon
+        const fetchData = async () => {
+            try {
+                // Not: Kendi API endpoint'ine göre burayı düzenleyebilirsin
+                const response = await fetch('http://localhost:8081/api/signals/latest');
+                if (response.ok) {
+                    const result = await response.json();
+
+                    // Backend'den gelen verileri state'lere dağıtıyoruz
+                    setStatus(result.status || "STABLE");
+                    setLatestScore(result.score || 0);
+                    setLatestDate(result.formattedDate || "YENİ");
+
+                    // Eğer backend grafik verisi gönderiyorsa onu da set ediyoruz
+                    if (result.history) {
+                        setChartData(result.history);
+                    }
+                }
+            } catch (error) {
+                console.error("Backend bağlantı hatası! Port 8081'i kontrol et.", error);
+            } finally {
+                // 1 saniye bekletip loading'i kapatıyoruz ki o cool animasyon görünsün
+                setTimeout(() => setIsLoading(false), 1000);
+            }
+        };
+
+        fetchData();
     }, []);
 
     // Dinamik Tema Ayarları
@@ -29,7 +48,21 @@ export default function DashboardPage() {
         POSITIVE: { color: "#22c55e", text: "text-green-500", bg: "bg-green-500/5", border: "border-green-500/20", shadow: "shadow-green-500/20" },
         PLATEAU: { color: "#ef4444", text: "text-red-500", bg: "bg-red-500/5", border: "border-red-500/20", shadow: "shadow-red-500/20" },
         STABLE: { color: "#3b82f6", text: "text-blue-500", bg: "bg-blue-500/5", border: "border-blue-500/20", shadow: "shadow-blue-500/20" }
-    }[status] || { color: "#22c55e", text: "text-green-500" };
+    }[status as keyof typeof theme] || { color: "#22c55e", text: "text-green-500" };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-[#060606] flex items-center justify-center">
+                <motion.div
+                    animate={{ opacity: [0.4, 1, 0.4] }}
+                    transition={{ repeat: Infinity, duration: 1.5 }}
+                    className="text-white font-black italic tracking-tighter text-2xl"
+                >
+                    SİNYAL ALINIYOR...
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-[#060606] text-white p-4 md:p-8 font-sans selection:bg-zinc-800">
@@ -68,7 +101,7 @@ export default function DashboardPage() {
                         <div>
                             <p className={`text-[10px] font-black uppercase tracking-widest ${theme.text} mb-1`}>AI ANALİZ MOTORU BİLDİRİMİ</p>
                             <h3 className="text-xl md:text-2xl font-black italic uppercase tracking-tighter leading-none">
-                                {status === "PLATEAU" ? "BENCH PRESS: GELİŞİM DURAKLADI. ACİL DELOAD." : "GELİŞİM TRENDİ POZİTİF: HACMİ ARTIR."}
+                                {status === "PLATEAU" ? "GELİŞİM DURAKLADI: ACİL DELOAD VEYA HACİM DEĞİŞİKLİĞİ." : "GELİŞİM TRENDİ POZİTİF: PERFORMANS ARTIŞI BEKLENİYOR."}
                             </h3>
                         </div>
                     </div>
@@ -84,12 +117,12 @@ export default function DashboardPage() {
                     <div className="lg:col-span-3 bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] p-8 shadow-3xl">
                         <div className="flex justify-between items-center mb-10">
                             <div>
-                                <h3 className="text-2xl font-black italic uppercase tracking-tighter italic underline underline-offset-8 decoration-white/5">STRENGTH_VELOCITY</h3>
+                                <h3 className="text-2xl font-black italic uppercase tracking-tighter underline underline-offset-8 decoration-white/5">STRENGTH_VELOCITY</h3>
                             </div>
                         </div>
                         <div className="h-[300px] w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={data}>
+                                <AreaChart data={chartData.length > 0 ? chartData : defaultData}>
                                     <defs>
                                         <linearGradient id="dynamicColor" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor={theme.color} stopOpacity={0.3}/>
@@ -117,7 +150,7 @@ export default function DashboardPage() {
                 {/* SİNYAL GÜNLÜĞÜ */}
                 <div className="bg-[#0f0f0f] border border-white/5 rounded-[2.5rem] overflow-hidden">
                     <div className="p-8 border-b border-white/5 flex justify-between items-center">
-                        <h3 className="text-xl font-black italic uppercase tracking-tighter italic">SİNYAL GEÇMİŞİ</h3>
+                        <h3 className="text-xl font-black italic uppercase tracking-tighter">SİNYAL GEÇMİŞİ</h3>
                     </div>
                     <div className="p-4 overflow-x-auto">
                         <table className="w-full text-left">
@@ -131,8 +164,8 @@ export default function DashboardPage() {
                             </thead>
                             <tbody className="divide-y divide-white/[0.02]">
                             <tr className="group hover:bg-white/[0.02] transition-all">
-                                <td className="p-4 font-bold text-sm">11 OCA</td>
-                                <td className="p-4 font-black italic text-xl">124</td>
+                                <td className="p-4 font-bold text-sm">{latestDate}</td>
+                                <td className="p-4 font-black italic text-xl">{latestScore}</td>
                                 <td className={`p-4 font-black text-[10px] uppercase tracking-widest ${theme.text}`}>{status}</td>
                                 <td className="p-4 text-right">
                                     <button className="text-[10px] font-black uppercase tracking-widest bg-zinc-900 px-4 py-2 rounded-xl border border-zinc-800">DETAY</button>
@@ -146,6 +179,14 @@ export default function DashboardPage() {
         </div>
     );
 }
+
+// Grafik boşken görünecek yedek veriler
+const defaultData = [
+    { day: 'Pzt', volume: 2400, strength: 110 },
+    { day: 'Sal', volume: 2800, strength: 112 },
+    { day: 'Çar', volume: 2600, strength: 112 },
+    { day: 'Per', volume: 3200, strength: 115 },
+];
 
 function SignalSummaryCard({ title, status, color }: any) {
     return (
