@@ -8,6 +8,7 @@ import com.bodysignal.api.dto.DailyRecordDto;
 import com.bodysignal.api.repository.DailyRecordRepository;
 import com.bodysignal.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +23,11 @@ public class DailyRecordService {
 
 
     public void createDailyRecord(
-            DailyRecordDto request,
-            String email) {
-
+            DailyRecordDto request) {
+        String email = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
         User user = userRepository
                 .findByEmail(email)
                 .orElseThrow();
