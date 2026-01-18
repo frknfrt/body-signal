@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
@@ -16,6 +17,8 @@ const data = [
 ];
 
 export default function DashboardPage() {
+
+const { user, logout } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     // Bu 'status' verisi PostgreSQL'den gelecek: "POSITIVE", "PLATEAU", "STABLE"
     const [status, setStatus] = useState("PLATEAU");
@@ -42,7 +45,7 @@ export default function DashboardPage() {
                         </span>
                     </div>
                     <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
-                        HOŞ GELDİN, <span className={`${theme.text} not-italic`}>YAVUZ</span>
+                        HOŞ GELDİN, <span className={`${theme.text} not-italic`}>{user.fullName}</span>
                     </h1>
                 </motion.div>
 

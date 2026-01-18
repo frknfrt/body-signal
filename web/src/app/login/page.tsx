@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
 
     const router = useRouter();
+     const { login } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -31,17 +33,27 @@ export default function LoginPage() {
             });
 
             if (!res.ok) {
+                // Backend'den gelen hata mesajını yakalayabiliriz
                 throw new Error("Giriş başarısız");
             }
-
+debugger;
             const data = await res.json();
-            console.log(data);
 
-            // başarılı → dashboard
+            // --- GÜNCELLEME: LOCALSTORAGE KAYIT ---
+            // Backend AuthResponse içindeki JWT token'ı burada 'token' anahtarıyla kaydediyoruz
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+                // İsteğe bağlı: Kullanıcı bilgilerini de saklayabilirsiniz
+                // localStorage.setItem("userEmail", email);
+            }
+            // --------------------------------------
+
+            // Başarılı giriş sonrası yönlendirme
+            login(data.user, data.token);
             router.push("/dashboard");
 
-        } catch (err) {
-            setError("E-posta veya şifre hatalı");
+        } catch (err: any) {
+            setError(err.message || "E-posta veya şifre hatalı");
         } finally {
             setLoading(false);
         }

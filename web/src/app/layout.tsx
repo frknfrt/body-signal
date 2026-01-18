@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthProvider } from '@/context/AuthContext';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -19,21 +20,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" className="dark">
       <body
-       className="
-       min-h-screen
-       bg-gradient-to-br
-       from-zinc-950
-       via-zinc-900
-       to-black
-       "
+        className={`
+          ${geistSans.variable}
+          ${geistMono.variable}
+          min-h-screen
+          bg-gradient-to-br
+          from-zinc-950
+          via-zinc-900
+          to-black
+        `}
       >
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );
