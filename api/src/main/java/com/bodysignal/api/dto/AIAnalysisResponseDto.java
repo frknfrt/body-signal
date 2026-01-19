@@ -12,6 +12,7 @@ public class AIAnalysisResponseDto {
 
     private String analysisText;
     private Double recoveryScore;
+    private String analysisTitle;
 
     private LocalDateTime createdAt;
 }

@@ -16,6 +16,7 @@ public class Exercise {
 
     private String name;        // Bench Press
     private Double weight;      // 80kg
+    private Integer sets;      // 4 Set
 
     private Integer repCount;   // 10 tekrar
 

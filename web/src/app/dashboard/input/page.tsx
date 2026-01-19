@@ -41,70 +41,64 @@ export default function SignalInputPage() {
         setStep(2);
     };
 
-    // 🔥 BACKEND BAĞLANTISI (GÜNCELLENDİ)
-    const handleFinalSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+   const handleFinalSubmit = async (e: React.FormEvent) => {
+       e.preventDefault();
 
-        if (!biometricData.sleepTime || !biometricData.wakeTime || !biometricData.weight) {
-            setError("BİYOMETRİK VERİLER EKSİK!");
-            shakeTrigger();
-            return;
-        }
+       if (!biometricData.sleepTime || !biometricData.wakeTime || !biometricData.weight) {
+           setError("BİYOMETRİK VERİLER EKSİK!");
+           shakeTrigger();
+           return;
+       }
 
-        setError(null);
-        setIsProcessing(true);
+       setError(null);
+       setIsProcessing(true);
 
-        const payload = {
-            recordDate: new Date().toISOString().split("T")[0],
-            sleepTime: biometricData.sleepTime,
-            wakeUpTime: biometricData.wakeTime,
-            morningWeight: Number(biometricData.weight),
-            workout: {
-                exercises: workoutRows.map(row => ({
-                    name: row.exercise,
-                    weight: Number(row.load),
-                    repCount: Number(row.reps),
-                    lastSetRpe: Number(row.rpe)
-                }))
-            }
-        };
+       const payload = {
+           recordDate: new Date().toISOString().split("T")[0],
+           sleepTime: biometricData.sleepTime,
+           wakeUpTime: biometricData.wakeTime,
+           morningWeight: Number(biometricData.weight),
+           workout: {
+               exercises: workoutRows.map(row => ({
+                   name: row.exercise,
+                   weight: Number(row.load),
+                   sets: Number(row.sets),
+                   repCount: Number(row.reps),
+                   lastSetRpe: Number(row.rpe)
+               }))
+           }
+       };
 
-        try {
-<<<<<<< HEAD
-            const tokenStr = localStorage.getItem("token");
-            const token = tokenStr
-              ? JSON.parse(tokenStr)
-              : null;
-            const res = await fetch("http://localhost:8080/api/daily-records", {
-=======
-            // Port 8081 olarak güncellendi ve headers sadeleştirildi
-            const res = await fetch("http://localhost:8081/api/daily-records", {
->>>>>>> c95ed7fed8cb5e7a06ab90aa4211291d93c9bec5
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    // Eğer login sisteminiz varsa Authorization başlığını buraya ekleyebilirsiniz
-                },
-                body: JSON.stringify(payload)
-            });
+       try {
+           const tokenStr = localStorage.getItem("token");
+           const token = tokenStr ? tokenStr : null;
 
-            if (!res.ok) {
-                const errorText = await res.text();
-                throw new Error(errorText || "Kayıt başarısız");
-            }
+           const res = await fetch("http://localhost:8080/api/daily-records", {
+               method: "POST",
+               headers: {
+                   "Content-Type": "application/json",
+                   ...(token && { Authorization: `Bearer ${token}` })
+               },
+               body: JSON.stringify(payload)
+           });
 
-            // Animasyonun tamamlanması için 2.5 saniye bekle ve Dashboard'a uç!
-            setTimeout(() => {
-                window.location.href = "/dashboard";
-            }, 2500);
+           if (!res.ok) {
+               const errorText = await res.text();
+               throw new Error(errorText || "Kayıt başarısız");
+           }
 
-        } catch (err) {
-            console.error(err);
-            setError("SİNYAL İLETİLEMEDİ: SUNUCU BAĞLANTISINI KONTROL ET!");
-            shakeTrigger();
-            setIsProcessing(false);
-        }
-    };
+           setTimeout(() => {
+               window.location.href = "/dashboard";
+           }, 2500);
+
+       } catch (err) {
+           console.error(err);
+           setError("SİNYAL İLETİLEMEDİ: SUNUCU BAĞLANTISINI KONTROL ET!");
+           shakeTrigger();
+           setIsProcessing(false);
+       }
+   };
+
 
     return (
         <div className="min-h-screen bg-[#060606] text-white p-4 md:p-12 overflow-x-hidden relative">
@@ -167,36 +161,96 @@ export default function SignalInputPage() {
                 <form onSubmit={handleFinalSubmit} className="bg-[#0f0f0f] border border-zinc-800/50 p-6 md:p-10 rounded-[2.5rem] shadow-3xl relative">
                     <AnimatePresence mode="wait">
                         {step === 1 ? (
-                            <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
-                                {workoutRows.map((row) => (
-                                    <div key={row.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 bg-black/40 p-5 rounded-[2rem] border border-zinc-900 items-end relative group">
-                                        <div className="col-span-12 md:col-span-4 space-y-2">
-                                            <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic ml-1 italic">Egzersiz</label>
-                                            <input list="exercise-list" placeholder="HAREKET ARA..." value={row.exercise} onChange={(e) => updateRow(row.id, 'exercise', e.target.value.toUpperCase())} className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-green-500 outline-none transition-all uppercase" />
+                         <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                            {workoutRows.map((row) => (
+                                    <div key={row.id} className="grid grid-cols-12 gap-3 bg-black/40 p-4 rounded-[2rem] border border-zinc-900 items-end relative group">
+
+                                        {/* EGZERSİZ - md:col-span-4 */}
+                                        <div className="col-span-12 md:col-span-4 flex flex-col justify-end">
+                                            <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic mb-2 ml-1 block leading-none">
+                                                Egzersiz
+                                            </label>
+                                            <input
+                                                list="exercise-list"
+                                                placeholder="HAREKET ARA..."
+                                                value={row.exercise}
+                                                onChange={(e) => updateRow(row.id, 'exercise', e.target.value.toUpperCase())}
+                                                className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-sm font-bold focus:border-green-500 outline-none transition-all uppercase h-[46px]"
+                                            />
                                             <datalist id="exercise-list">{EXERCISE_DATABASE.map(ex => <option key={ex} value={ex} />)}</datalist>
                                         </div>
-                                        <div className="col-span-6 md:col-span-2 space-y-2">
-                                            <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic text-center block">KG</label>
-                                            <input type="number" placeholder="0" value={row.load} onChange={(e) => updateRow(row.id, 'load', e.target.value)} className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-center text-sm font-black focus:border-green-500 outline-none" />
+
+                                        {/* KG - md:col-span-1 */}
+                                        <div className="col-span-4 md:col-span-1 flex flex-col justify-end">
+                                            <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic mb-2 block text-center leading-none">
+                                                KG
+                                            </label>
+                                            <input
+                                                type="number"
+                                                placeholder="0"
+                                                value={row.load}
+                                                onChange={(e) => updateRow(row.id, 'load', e.target.value)}
+                                                className="w-full bg-[#111] border border-zinc-800 rounded-xl py-3 text-center text-sm font-black focus:border-green-500 outline-none h-[46px]"
+                                            />
                                         </div>
-                                        <div className="col-span-6 md:col-span-2 space-y-2">
-                                            <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic text-center block">REP</label>
-                                            <input type="number" placeholder="0" value={row.reps} onChange={(e) => updateRow(row.id, 'reps', e.target.value)} className="w-full bg-[#111] border border-zinc-800 rounded-xl px-4 py-3 text-center text-sm font-black focus:border-green-500 outline-none" />
+
+                                        {/* REP - md:col-span-1 */}
+                                        <div className="col-span-4 md:col-span-1 flex flex-col justify-end">
+                                            <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic mb-2 block text-center leading-none">
+                                                REP
+                                            </label>
+                                            <input
+                                                type="number"
+                                                placeholder="0"
+                                                value={row.reps}
+                                                onChange={(e) => updateRow(row.id, 'reps', e.target.value)}
+                                                className="w-full bg-[#111] border border-zinc-800 rounded-xl py-3 text-center text-sm font-black focus:border-green-500 outline-none h-[46px]"
+                                            />
                                         </div>
-                                        <div className="col-span-12 md:col-span-4 space-y-2">
-                                            <div className="flex justify-between px-1"><span className="text-[9px] font-black text-zinc-600 uppercase italic">ZORLUK</span><span className="text-[9px] font-black text-green-500 italic">@{row.rpe}</span></div>
-                                            <div className="flex gap-1 bg-black p-1 rounded-xl border border-zinc-900">
+
+                                        {/* SET - md:col-span-1 */}
+                                        <div className="col-span-4 md:col-span-1 flex flex-col justify-end">
+                                            <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest italic mb-2 block text-center leading-none">
+                                                SET
+                                            </label>
+                                            <input
+                                                type="number"
+                                                placeholder="0"
+                                                value={row.sets}
+                                                onChange={(e) => updateRow(row.id, 'sets', e.target.value)}
+                                                className="w-full bg-[#111] border border-zinc-800 rounded-xl py-3 text-center text-sm font-black focus:border-green-500 outline-none h-[46px]"
+                                            />
+                                        </div>
+
+                                        {/* ZORLUK (RPE) - md:col-span-5 */}
+                                        <div className="col-span-12 md:col-span-5 flex flex-col justify-end">
+                                            <div className="flex justify-between px-1 mb-2 leading-none">
+                                                <span className="text-[9px] font-black text-zinc-600 uppercase italic">ZORLUK</span>
+                                                <span className="text-[9px] font-black text-green-500 italic">@{row.rpe}</span>
+                                            </div>
+                                            <div className="flex gap-1 bg-black p-1 rounded-xl border border-zinc-900 h-[46px] items-center">
                                                 {RPE_VALUES.map((val) => (
-                                                    <button key={val} type="button" onClick={() => updateRow(row.id, 'rpe', val.toString())} className={`flex-1 py-2 rounded-lg text-[10px] font-black transition-all ${row.rpe === val.toString() ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'text-zinc-700 hover:text-zinc-400'}`}>{val}</button>
+                                                    <button
+                                                        key={val}
+                                                        type="button"
+                                                        onClick={() => updateRow(row.id, 'rpe', val.toString())}
+                                                        className={`flex-1 h-full rounded-lg text-[10px] font-black transition-all ${row.rpe === val.toString() ? 'bg-green-500 text-black shadow-[0_0_15px_rgba(34,197,94,0.4)]' : 'text-zinc-700 hover:text-zinc-400'}`}
+                                                    >
+                                                        {val}
+                                                    </button>
                                                 ))}
                                             </div>
                                         </div>
-                                        <button type="button" onClick={() => workoutRows.length > 1 && setWorkoutRows(workoutRows.filter(r => r.id !== row.id))} className="absolute -right-2 -top-2 w-6 h-6 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500">✕</button>
+
+                                        {/* SİLME BUTONU */}
+                                        <button type="button" onClick={() => workoutRows.length > 1 && setWorkoutRows(workoutRows.filter(r => r.id !== row.id))} className="absolute -right-2 -top-2 w-6 h-6 bg-zinc-900 border border-zinc-800 rounded-full text-[10px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500 z-10">✕</button>
                                     </div>
                                 ))}
-                                <button type="button" onClick={() => setWorkoutRows([...workoutRows, { id: Date.now(), exercise: "", load: "", reps: "", rpe: "8" }])} className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-3xl text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 hover:text-green-500 transition-all">+ YENİ EGZERSİZ EKLE</button>
-                                <motion.button type="button" whileHover={{ scale: 1.01 }} onClick={validateStep1} className="w-full bg-white text-black font-black uppercase italic py-6 rounded-[2rem] text-2xl tracking-tighter">BİYOMETRİK ANALİZE GEÇ →</motion.button>
-                            </motion.div>
+
+                             <button type="button" onClick={() => setWorkoutRows([...workoutRows, { id: Date.now(), exercise: "", load: "", reps: "", sets: "", rpe: "8" }])} className="w-full py-4 border-2 border-dashed border-zinc-800 rounded-3xl text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 hover:text-green-500 transition-all">+ YENİ EGZERSİZ EKLE</button>
+
+                             <motion.button type="button" whileHover={{ scale: 1.01 }} onClick={validateStep1} className="w-full bg-white text-black font-black uppercase italic py-6 rounded-[2rem] text-2xl tracking-tighter">BİYOMETRİK ANALİZE GEÇ →</motion.button>
+                         </motion.div>
                         ) : (
                             <motion.div key="s2" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} className="space-y-12">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

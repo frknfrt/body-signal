@@ -43,6 +43,7 @@ public class DailyRecordService {
                     e.setName(req.getName());
                     e.setWeight(req.getWeight());
                     e.setRepCount(req.getRepCount());
+                    e.setSets(req.getSets());
                     e.setLastSetRpe(req.getLastSetRpe());
                     e.setWorkout(workout);
                     return e;
@@ -63,10 +64,10 @@ public class DailyRecordService {
         dailyRecordRepository.save(record);
 
         // 2. AI Analizi şu anlık devre dışı bırakıyoruz (Hata buradaydı)
-        /* aiAnalysisService.analyzeAndSave(
+        aiAnalysisService.analyzeAndSave(
                 record,
                 email
         );
-        */
+
     }
 }

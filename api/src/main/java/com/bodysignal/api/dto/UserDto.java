@@ -1,2 +1,13 @@
-package com.bodysignal.api.dto;public class UserDto {
+package com.bodysignal.api.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class UserDto {
+    private String email;
+
+    private String password;
+    private String fullName;
 }

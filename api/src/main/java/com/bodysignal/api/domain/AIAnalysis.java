@@ -24,6 +24,7 @@ public class AIAnalysis {
     @Column(length = 5000)
     private String analysisText;
 
+    private String analysisTitle;
     private Double recoveryScore; // 0-100 gibi
 
     private LocalDateTime createdAt;

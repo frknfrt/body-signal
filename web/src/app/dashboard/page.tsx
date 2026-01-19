@@ -21,7 +21,7 @@ const { user, logout } = useAuth();
         const fetchData = async () => {
             try {
                 // Not: Kendi API endpoint'ine göre burayı düzenleyebilirsin
-                const response = await fetch('http://localhost:8081/api/signals/latest');
+                const response = await fetch('http://localhost:8080/api/signals/latest');
                 if (response.ok) {
                     const result = await response.json();
 

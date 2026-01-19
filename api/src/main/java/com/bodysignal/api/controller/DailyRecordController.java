@@ -16,13 +16,12 @@ public class DailyRecordController {
     private final DailyRecordService dailyRecordService;
 
     @PostMapping
-    public ResponseEntity<?> create(
-            @RequestBody DailyRecordDto request) {
+        public ResponseEntity<?> create(
+                @RequestBody DailyRecordDto request ) {
 
-        dailyRecordService.createDailyRecord(
-                request,
-                "furkan2@gmail.com"
-        );
+            dailyRecordService.createDailyRecord(
+                    request
+            );
 
         return ResponseEntity.ok("Günlük kayıt oluşturuldu");
     }
